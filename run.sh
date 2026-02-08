@@ -29,7 +29,7 @@ if [ $status -eq 0 ]; then
     echo "-------------------------"
     echo ""
     
-    if ["$answer" == "y" ]; then
+    if [ "$answer" == "y" ]; then
         chmod u+x "$build"
         ./"$build"
     else

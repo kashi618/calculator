@@ -2,6 +2,7 @@
 
 #define BUTTON_SPACING 5
 #define BUTTON_SIZE 80
+#define MAX_EQUATION 100 // Maximum amount of operators and digits
 
 static void activate(GApplication *, gpointer);
 static void button_setup(GtkWidget *);
@@ -9,8 +10,11 @@ static void create_button(GtkWidget *, char *, int, int, int);
 static void button_clicked(GtkWidget *, gpointer);
 static void calculate();
 
-char currentOperation[100];
-int operationIndex = 0;
+static int  is_operator(char);
+static int  is_empty(char);
+
+char calcEq[MAX_EQUATION] = {"\0"};
+int calcIndex = 0; // 0 means empty. 1 means there is one element stored at index=0
 
 int main(int argc, char* argv[]) {
     // Setup GTK
@@ -98,44 +102,74 @@ static void button_setup(GtkWidget *grid) {
                 gtk_grid_attach(GTK_GRID(grid), button, col, row, 1, 1);
             }
         }
-    }
+    } // END for loop
 } // END button_setup
 
 
 static void button_clicked(GtkWidget *button, gpointer user_data) {
     const char *label = gtk_button_get_label(GTK_BUTTON(button));
-
     switch (label[0]) {
         case '=':
+            if (is_operator(calcEq[calcIndex-1])) {
+                printf("Cannot end with operator\n");
+                break;
+            }
+
             calculate();
             break;
+
         case 'D':
-            if (operationIndex>0) {
-                printf("Deleted %c\n", currentOperation[--operationIndex]);
-                currentOperation[operationIndex] = '\0';
+            if (calcIndex>0) {
+                printf("Deleted %c\n", calcEq[--calcIndex]);
+                calcEq[calcIndex] = '\0';
             }
             else {
                 printf("No operations\n");
             }
             break;
+
         case 'A':
             printf("AC!\n");
-            currentOperation[0] = '\0';
-            operationIndex = 0;
+
+            calcEq[0] = '\0';
+            calcIndex = -1;
             break;
+
         default:
-            printf("Number: %c\n", label[0]);
-            currentOperation[operationIndex++] = label[0];
-            currentOperation[operationIndex] = '\0';
+            // Checks if starts with operator
+            if (calcIndex==0 && is_operator(label[0])) {
+                printf("Cannot start with an operator!\n");
+                break;
+            }
+
+            // Check if operators are repeated
+            if (is_operator(calcEq[calcIndex-1]) && is_operator(label[0])) {
+                printf("Cannot have multiple operators in a row\n");
+                break;
+            }
+
+            // Increment calcIndex, and set it to input
+            calcEq[calcIndex] = label[0];
+            calcEq[++calcIndex] = '\0';
     }
+
+    if (label[0] != '=') printf("Current equation: %s\n", calcEq);
 }
 
 static void calculate() {
-    printf("Current Operation: %s\n", currentOperation);
+    int i;
     
-    for (int i=0; i<operationIndex; i++) {
-        currentOperation[i];
+    printf("Calculating.........\n");
+}
+
+
+// Returns 1 if operator
+static int is_operator(char x) {
+    switch (x) {
+        case '+': case '-': case 'x': case '/':
+            return 1;
+            break;
+        default:
+            return 0;
     }
-    currentOperation[0] = '\0';
-    operationIndex = 0;
 }
