@@ -1,86 +1,11 @@
 #include <gtk/gtk.h>
-
-
-/* Macros */
-#define BUTTON_SPACING 5  // Sets spacing between buttons (try to keep it at 5)
-#define BUTTON_SIZE 80    // Sets size of buttons
-#define MAX_EQUATION 100  // Maximum amount of operators and digits
-
-
-/* Function Signatures */
-static void activate(GApplication *, gpointer);
-static void button_setup(GtkWidget *);
-static void create_button(GtkWidget *, char *, int, int, int);
-static void button_clicked(GtkWidget *, gpointer);
-static void calculate(int [], int);
-
-static int  is_operator(char);
-static int  is_empty(char);
-
-static int* get_digits(int *, int);
-//static int* get_operators();
-
-
-/* Structs */
-typedef struct {
-    // String of current equation
-    char eqStr[MAX_EQUATION];
-    int eqStrIdx = 0;
-    
-    // List of digits in current equation
-    int* digits;
-    int digitsIdx = 0;
-    
-    // list of operators in current equation
-    char* operators;
-    int operatorsIdx = 0;
-
-    // Stores if current equation has an operator
-    int hasOperator;
-    int hasOperatorIdx = 0;
-    
-    // Result of calculation
-    double result;
-} CalculatorState;
-
-
-/* Global variables */
-CalculatorState calc;
-
-char calcEq[MAX_EQUATION] = {"\0"};
-int  calcIndex = 0;
-
-int  containsOperator = 0;
-int  operatorIndex = 0;
-
-
-
-/*
-int listDigits[MAX_EQUATION];    // List of digits in the current equation
-int listOperators[MAX_EQUATION]; // List of operators in the current equation
-int listOperatorsIndex = 0, listDigitsIndex = 0;
-*/
-
-// Main
-int main(int argc, char* argv[]) {
-    // Setup GTK
-    GtkApplication *app;
-    int status;
-
-    app = gtk_application_new("com.github.kashi618.calculator", G_APPLICATION_DEFAULT_FLAGS);
-    g_signal_connect(app, "activate", G_CALLBACK(activate), NULL);
-
-    status = g_application_run(G_APPLICATION(app), argc, argv);
-    g_object_unref(app);
-
-    return status;
-}
-
+#include "ui.h"
+#include "calculator.h"
 
 /*
 *  Starts calculator window 
 */
-static void activate(GApplication *app, gpointer user_data) {
+void activate(GApplication *app, gpointer user_data) {
     GtkWidget *win;
 
     // Window setup and properties
@@ -108,7 +33,7 @@ static void activate(GApplication *app, gpointer user_data) {
 /*
 *  Sets up calculator button layout and functionality
 */
-static void button_setup(GtkWidget *grid) {
+void button_setup(GtkWidget *grid) {
     GtkWidget *button;
     int row, col;
     char *keys[4][5] = {
@@ -158,9 +83,9 @@ static void button_setup(GtkWidget *grid) {
 /*
 *  Call back function for when a button is pressed
 */
-static void button_clicked(GtkWidget *button, gpointer user_data) {
+void button_clicked(GtkWidget *button, gpointer user_data) {
     const char *label = gtk_button_get_label(GTK_BUTTON(button));
-    
+    /* 
     switch (label[0]) {
         case '=':
             if (has_operator(calc) && is_operator(calc.eqStr[eqStrIdx-1])) {
@@ -222,62 +147,6 @@ static void button_clicked(GtkWidget *button, gpointer user_data) {
     }
 
     if (label[0] != '=') printf("Current equation: %s\n", calcEq);
+    */
 }
 
-
-/*
-*  Calculates a string equation
-*/
-static void calculate(int calcEq[], int calcIndex) {
-    printf("Calculating.........\n");
-
-    int *digit = get_digits(calcEq, calcIndex);
-}
-
-
-/*
-*  Returns True (1) if a character is an operator
-*/
-static int is_operator(char x) {
-    switch (x) {
-        case '+': case '-': case 'x': case '/':
-            return 1;
-            break;
-        default:
-            return 0;
-    }
-}
-
-
-/*
-*  Returns array of digits from a string equation 
-*/
-static int* get_digits(int* calcEq, int calcIndex) {
-    int count = 0;
-    
-    // Count how many digits there are
-    for (int i=0; i<calcIndex; i++) {
-        if (!is_operator(calcEq[i])) {
-            count++;
-        }
-    }
-
-    printf("Amount digits: %d\n", count);
-    //int listDigit
-    //return listDigit;
-}
-
-
-
-/*
-static char* get_operators() {
-
-    
-}
-*/
-
-static int has_operator(CalculatorState calc) {
-    if (calc.operatorIdx) {
-         
-    }
-}
